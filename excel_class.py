@@ -1,7 +1,5 @@
 import openpyxl
 import xlsxwriter
-import os
-from time import sleep
 import datetime
 
 
@@ -25,7 +23,7 @@ class excel_hours():
             '''fill dates and mark weekends'''
             if (current_month == 2) and (row_number - 4 <= 28):
                 date = datetime.date(
-                    year=2022, month=current_month, day=row_number-4)
+                    year=datetime.datetime.now().year, month=current_month, day=row_number-4)
                 if date.weekday() in (5, 6):
                     for col in range(4, 10):
                         worksheet_name.write(row_number, col, None, excel_file.add_format(
@@ -49,7 +47,7 @@ class excel_hours():
             elif (current_month % 2 == 0 and current_month != 2 and current_month < 8) and (row_number - 4 <= 30)\
                     or (current_month % 2 != 0 and current_month != 2 and current_month >= 8) and (row_number - 4 <= 30):
                 date = datetime.date(
-                    year=2022, month=current_month, day=row_number-4)
+                    year=datetime.datetime.now().year, month=current_month, day=row_number-4)
                 if date.weekday() in (5, 6):
                     for col in range(4, 10):
                         worksheet_name.write(row_number, col, None, excel_file.add_format(
@@ -72,7 +70,7 @@ class excel_hours():
             else:
                 if (current_month % 2 != 0 and current_month < 8) or (current_month % 2 == 0 and current_month >= 8):
                     date = datetime.date(
-                        year=2022, month=current_month, day=row_number-4)
+                        year=datetime.datetime.now().year, month=current_month, day=row_number-4)
                     if date.weekday() in (5, 6):
                         for col in range(4, 10):
                             worksheet_name.write(row_number, col, None, excel_file.add_format(
@@ -138,25 +136,42 @@ class excel_hours():
                 else:
                     make_dates_for_respective_months(r)
 
-    def insert_datas_by_user(self):
-        # respond_date = input(
-        #     'Please enter what date you want fill: Custom date or today\'s date (custom/today) ')
-        respond_hours = input(
-            'Please enter From what hour to what hour u worked, amount of hours you worked (separate with a space) ')
-        # 15-16.30 1.30 15-17 2
-        to_write = respond_hours.split(' ')
-        date_today = datetime.date.today().strftime('%d/%m/%Y')
-        wb = openpyxl.load_workbook(filename=self.path+self.fileName)
-        if self.months[int(date_today[3:5])][0:3] in wb.sheetnames:
-            ws_current = wb[self.months[int(date_today[3:5])][0:3]]
-            for row in ws_current.iter_rows(min_row=6, min_col=3, max_col=4, max_row=36):
-                for cell in row:
-                    if cell.value == date_today:
-                        # skonczylem tutaj tu bedzie trzeba dodac zeby wpisywalo te godziny w cell'u obok
-                        print('jest git')
+    def insert_hours_by_user_choice(self):
 
-        # print(date_today.strftime('%d/%m/%Y'))
-        print(to_write, date_today[3:5], type(self.months.keys()))
+        def insert_into_excel(particular_date):
+            wb = openpyxl.load_workbook(filename=self.path+self.fileName)
+            if self.months[int(particular_date[3:5])][0:3] in wb.sheetnames:
+                ws_current = wb[self.months[int(particular_date[3:5])][0:3]]
+                for row in ws_current.iter_rows(min_row=6, min_col=3, max_col=4, max_row=36):
+                    for cell in row:
+                        if cell.value == particular_date:
+                            # skonczylem tutaj tu bedzie trzeba dodac zeby wpisywalo te godziny w cell'u obok
+                            add_h_range = ws_current.cell(
+                                row=cell.row, column=cell.column+2)
+                            add_amount_h = ws_current.cell(
+                                row=cell.row, column=cell.column+4)
+                            add_h_range.value = respond_hours_range
+                            diff = float(
+                                respond_hours_range[5:10]) - float(respond_hours_range[0:5])
+                            after_decimal_point = round(
+                                (diff - int(diff))/0.6, 2)
+                            add_amount_h.value = int(
+                                diff) + after_decimal_point
+                            break
+                wb.save(self.path+self.fileName)
+
+        respond_date = input(
+            'Please enter what date you want fill: Custom date or today\'s date (input format: custom/today) ')
+        respond_hours_range = input(
+            'Please enter start hour when you began your work and end hour when you end it(exemplary input format: 07.00-09.30) ')
+        if respond_date == "custom":
+            respond_particular_date = input(
+                'Please enter particular date to which you want insert hours (dd/mm/year) ')
+            insert_into_excel(respond_particular_date)
+        else:
+            date_today = datetime.date.today().strftime('%d/%m/%Y')
+            insert_into_excel(date_today)
+        # Chyba ostatnia rzecz w logice excela to dodac counta w kolumnie 'Total hours per week'
 
     def create_excel(self):
         new_excel_file = xlsxwriter.Workbook(
@@ -167,7 +182,3 @@ class excel_hours():
             self.new_sheet_and_fill(new_excel_file, Work_sheet, k)
 
         new_excel_file.close()
-        # dodac zeby np. po 5 min usuwalo ten plik to tylko do modyfikowania
-
-        # sleep(180)
-        # os.remove(self.path+self.fileName)
