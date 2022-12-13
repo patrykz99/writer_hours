@@ -120,10 +120,12 @@ class excel_hours():
         wb = openpyxl.load_workbook(filename=self.path)
 
         def insert_into_excel(particular_date):
+
             if self.months[int(particular_date[3:5])][0:3] in wb.sheetnames:
                 ws_current = wb[self.months[int(particular_date[3:5])][0:3]]
                 for row in ws_current.iter_rows(min_row=6, min_col=3, max_col=4, max_row=36):
                     for cell in row:
+
                         if cell.value == particular_date+f'/{datetime.datetime.now().year}':
                             add_h_range = ws_current.cell(
                                 row=cell.row, column=cell.column+2)
@@ -132,6 +134,7 @@ class excel_hours():
                             add_h_range.value = respond_hours_range
                             diff = float(
                                 respond_hours_range[6:11]) - float(respond_hours_range[0:5])
+
                             after_decimal_point = round(
                                 (diff - int(diff))/0.6, 2)
                             add_amount_h.value = int(
