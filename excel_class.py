@@ -2,6 +2,7 @@ import openpyxl
 import xlsxwriter
 import datetime
 import sys
+import re
 
 
 class excel_hours():
@@ -12,12 +13,12 @@ class excel_hours():
 
     def new_sheet_and_fill(self, excel_file, worksheet_name, current_month):
         """
-        Method to create new excel worksheet, create table inside and customize it 
+        Method to create new excel worksheet, create table inside and customize it
 
         Args:
             excel_file (str): Variable for name of file
             worksheet_name (str): Variable for worksheet name
-            current_month (int): key in the dictionary so that extract value(month name) from dictionary and insert into table 
+            current_month (int): key in the dictionary so that extract value(month name) from dictionary and insert into table
         """
         def make_dates_for_respective_months(row_number):
             '''fill dates and mark weekends'''
@@ -32,8 +33,7 @@ class excel_hours():
                     for col in range(4, 7, 2):
                         worksheet_name.merge_range(
                             row_number, col, row_number, col+1, None, cell_border)
-                '''Write dates'''
-
+                
                 worksheet_name.merge_range(
                     row_number, 2, row_number, 3, date.strftime('%d/%m/%Y'), cell_border)
             elif (current_month % 2 == 0 and current_month != 2 and current_month < 8) and (row_number - 4 <= 30)\
@@ -125,7 +125,6 @@ class excel_hours():
                 ws_current = wb[self.months[int(particular_date[3:5])][0:3]]
                 for row in ws_current.iter_rows(min_row=6, min_col=3, max_col=4, max_row=36):
                     for cell in row:
-
                         if cell.value == particular_date+f'/{datetime.datetime.now().year}':
                             add_h_range = ws_current.cell(
                                 row=cell.row, column=cell.column+2)
@@ -146,13 +145,13 @@ class excel_hours():
                 ws_current = wb[self.months[int(relevant_date[3:5])][0:3]]
                 for col in ws_current.iter_cols(min_row=6, max_row=36, min_col=3, max_col=4):
                     for cell in col:
-                        if cell.value == relevant_date+f'/{datetime.datetime.now().year}':
+                        if cell.value == relevant_date+f'/{datetime.datetime.now().year}' and cell.fill.start_color.index == '00000000':
                             ws_current['I6'] = ws_current['I6'].value - \
                                 ws_current[f'G{cell.row}'].value
                             ws_current[f'E{cell.row}'].value = None
                             ws_current[f'G{cell.row}'].value = None
                             wb.save(self.path)
-                            return print('Removed')
+                            return print('\nRemoved')
                         if cell.row == 34 and int(relevant_date[3:5]) == 'February':
                             break
                         if cell.row == 36 and int(relevant_date[3:5]) in {'April', 'June', 'September', 'November'}:
@@ -190,23 +189,36 @@ class excel_hours():
                 sys.exit(0)
 
         if choice == '1':
+
             respond_date = input(
                 'Please enter what date you want fill: Custom date or today\'s date (input format: custom/today): ')
-            respond_hours_range = input(
-                'Please enter start hour when you began your work and end hour when you end it(exemplary input format: 07.00-09.30): ')
-            if respond_date == "custom":
-                respond_particular_date = input(
-                    'Please enter particular day and month to whom you want insert hours (dd/mm): ')
-                insert_into_excel(respond_particular_date)
-                sum_total_hours_per_week()
+            if respond_date == 'custom' or respond_date == 'today':
+                respond_hours_range = input(
+                    'Please enter start hour when you began your work and end hour when you end it(exemplary input format: 07.00-09.30): ')
             else:
-                date_today = datetime.date.today().strftime('%d/%m')
-                insert_into_excel(date_today)
-                sum_total_hours_per_week()
+                raise Exception('Bad input format')
+            # regular expression to check if input contains proper format
+            if re.match('^[0-9]{2}.[0-9]{2}-[0-9]{2}.[0-9]{2}$', respond_hours_range):
+                if respond_date == "custom":
+                    respond_particular_date = input(
+                        'Please enter particular day and month to whom you want insert hours (dd/mm): ')
+                    insert_into_excel(respond_particular_date)
+                    sum_total_hours_per_week()
+                else:
+                    date_today = datetime.date.today().strftime('%d/%m')
+                    insert_into_excel(date_today)
+                    sum_total_hours_per_week()
+            else:
+                raise Exception('Bad input format')
         else:
             data_to_remove = input(
                 'Type day and month for whom you want to remove hours (dd/mm): ')
-            delete_inserted_hours_from_excel(data_to_remove)
+            # regular expression to check if input contains proper format
+            if re.match('^[0-9]{2}/[0-9]{2}$', data_to_remove):
+
+                delete_inserted_hours_from_excel(data_to_remove)
+            else:
+                raise Exception('Bad input format')
 
     def create_excel(self):
         new_excel_file = xlsxwriter.Workbook(
