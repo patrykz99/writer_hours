@@ -12,3 +12,8 @@ This program creates excel file with table for the whole year, also allows user 
 ^ This mentioned function calculates incorrectly yet.
 
 (Here will be information about updating my "writer_hour"s program soon.)
+
+
+<h3><u> How to run the program with a command </u></h3>
+
+python main_execute.py -of "path to ouput <strong>(xlsx extension required)</strong>" 
