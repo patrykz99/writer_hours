@@ -42,5 +42,5 @@ def parse_output():
 
 if __name__ == "__main__":
     # main invoke
-    Path_to_file = parse_output()['outputfile']
+    Path_to_file = parse_output()['outputfile']+".xlsx"
     check_and_execute(Path_to_file)
