@@ -201,8 +201,8 @@ class excel_hours():
             if respond_date == 'custom' or respond_date == 'today':
                 respond_hours_range = input(
                     '''
-                    Please enter start hour when you began your work and end hour when you end it(exemplary input format: 07.00-09.30)
-                    or (-) when you didn't work at all: 
+Please enter start hour when you began your work and end hour when you end it(exemplary input format: 07.00-09.30)
+or (-) when you didn't work at all: 
                     ''')
             else:
                 raise Exception('Bad input format')
