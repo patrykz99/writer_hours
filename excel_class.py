@@ -130,12 +130,34 @@ class excel_hours():
                                 row=cell.row, column=cell.column+2)
                             add_amount_h = ws_current.cell(
                                 row=cell.row, column=cell.column+4)
-                            add_h_range.value = respond_hours_range
+                            current_value = add_h_range.value
+                            print(type(current_value))
+                            if current_value:
+                                add_h_range.value = current_value +'&'+ respond_hours_range
+                            else:
+                                add_h_range.value = respond_hours_range
                             if respond_hours_range != "-":
                                 # calculation of hours difference
-                                diff = (datetime.datetime.strptime(respond_hours_range[6:11], "%H.%M") -
-                                        datetime.timedelta(hours=int(respond_hours_range[0:2]), minutes=int(respond_hours_range[3:5]))).strftime("%H.%M")
-                                diff = float(diff)  # convert str to float
+                                if '&' not in add_h_range.value:
+                                    diff = (datetime.datetime.strptime(respond_hours_range[6:11], "%H.%M") -
+                                            datetime.timedelta(hours=int(respond_hours_range[0:2]), minutes=int(respond_hours_range[3:5]))).strftime("%H.%M")
+                                    diff = float(diff)  
+                                else:
+                                    num_of_appearances = add_h_range.value.count('&')
+                                    print(num_of_appearances)
+                                    diff = []
+                                    # idx_spread = add_h_range.value.index('&')
+                                    if num_of_appearances >= 1:
+                                        splitted = (current_value +'&'+ respond_hours_range).split('&')
+                                        print(splitted)
+                                        for noa in range(num_of_appearances+1):
+                                            diff.append(float(((datetime.datetime.strptime(splitted[noa][6:11], "%H.%M") -
+                                                datetime.timedelta(hours=int(splitted[noa][0:2]), minutes=int(splitted[noa][3:5]))).strftime("%H.%M"))))
+                                        print(diff)
+                                        diff = sum(diff)  
+                                        print(diff)
+                                        
+                                
                                 after_decimal_point = round(
                                     (diff - int(diff))/0.6, 2)
                                 # add amount of hours
@@ -144,6 +166,11 @@ class excel_hours():
                             else:
                                 add_amount_h.value = 0
                             break
+            try:
+                wb.save(self.path)
+            except PermissionError:
+                print('File is opened! Firstly, close it.')
+                sys.exit(0)  
 
         def delete_inserted_hours_from_excel(relevant_date):
             if self.months[int(relevant_date[3:5])][0:3] in wb.sheetnames:
