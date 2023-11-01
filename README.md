@@ -11,7 +11,12 @@ This program creates excel file with table for the whole year, also allows user 
 *The latest update is the addition of the ability to enter several ranges of working hours on the same day into excel, e.g. 10.00-12.00&14.00-15.00%17.00-19.00&etc.
 
 
-
 <h3><u> How to run the program with a command </u></h3>
 
 python main_execute.py -of "path to ouput <strong>(xlsx extension required)</strong>" 
+<h3><u>Example of a program call below:</u></h3>
+
+![Alt text](image-4.png)
+![Alt text](image.png)
+
+
