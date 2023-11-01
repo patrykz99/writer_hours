@@ -233,6 +233,7 @@ or (-) when you didn't work at all:
                     date_today = datetime.date.today().strftime('%d/%m')
                     insert_into_excel(date_today)
                     sum_total_hours_in_a_month()
+                print('\nHours Added!')
             else:
                 raise Exception('Bad input format')
         else:
