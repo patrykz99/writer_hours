@@ -13,7 +13,7 @@ This program creates excel file with table for the whole year, also allows user 
 
 <h3><u> How to run the program with a command </u></h3>
 
-python main_execute.py -of "path to ouput <strong>(xlsx extension required)</strong>" 
+python main_execute.py -of "path to ouput <strong>(xlsx extension not required)</strong>" 
 <h3><u>Example of a program call below:</u></h3>
 
 ![Alt text](image-4.png)
