@@ -16,7 +16,10 @@ This program creates excel file with table for the whole year, also allows user 
 python main_execute.py -of "path to ouput <strong>(xlsx extension not required)</strong>" 
 <h3><u>Example of a program call below:</u></h3>
 
-![Alt text](image-4.png)
-![Alt text](image.png)
+![Alt text](./im_readme/image-4.png)
+<br/><br/>
+<h3><u>View in excel:</u></h3>
+
+![Alt text](./im_readme/image.png)
 
 
